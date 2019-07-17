@@ -66,7 +66,7 @@ pip_dependencies = [
     'pydocstyle==3.0.0',
     'pyflakes',
     'pyparsing',
-    'pytest==4.6.4',
+    'pytest',
     'pytest-cov',
     'pytest-repeat',
     'pytest-rerunfailures',
@@ -118,7 +118,7 @@ def main(sysargv=None):
             'ros1_bridge',
             'shape_msgs',
             'stereo_msgs',
-            'trajectory_msgs',
+           #'trajectory_msgs',
             'vision_opencv',
         ]
     else:
