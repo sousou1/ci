@@ -29,7 +29,7 @@ RUN echo "deb http://repositories.ros.org/ubuntu/testing/ `lsb_release -cs` main
 RUN echo "Bust Cache for key update 2019-06-08" && curl --silent http://repositories.ros.org/repos.key | apt-key add -
 
 # Add the OSRF repositories to the apt sources list.
-RUN echo "deb http://packages.osrfoundation.org/gazebo/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list
+RUN if test ${UBUNTU_DISTRO} != buster; then echo "deb http://packages.osrfoundation.org/gazebo/ubunt `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list; else echo "deb http://packages.osrfoundation.org/gazebo/debian-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-latest.list ; fi
 RUN curl --silent http://packages.osrfoundation.org/gazebo.key | apt-key add -
 
 # Install some development tools.
@@ -72,9 +72,12 @@ RUN if test ${COMPILE_WITH_CLANG} = true; then apt-get update && apt-get install
 RUN apt-get update && apt-get install --no-install-recommends -y gcovr
 
 # Install the OpenSplice binary from the OSRF repositories.
-RUN apt-get update && apt-get install --no-install-recommends -y libopensplice69=6.9.190705+osrf1-1~$UBUNTU_DISTRO
+RUN if test ${UBUNTU_DISTRO} = buster; then cd /tmp && curl --silent -OL https://github.com/ADLINK-IST/opensplice/releases/download/OSPL_V6_9_190403OSS_RELEASE/PXXX-VortexOpenSplice-6.9.190403OSS-HDE-x86_64.linux-gcc5.4.0-glibc2.23-installer.tar.gz && tar -xzvf PXXX-VortexOpenSplice-6.9.190403OSS-HDE-x86_64.linux-gcc5.4.0-glibc2.23-installer.tar.gz; fi
+RUN if test ${UBUNTU_DISTRO} = buster; then sed -i "s/<Id>0<\/Id>/<Id>108<\/Id>/" /tmp/HDE/x86_64.linux/etc/config/ospl.xml; fi
+RUN if test ${UBUNTU_DISTRO} = buster; then ln -s /tmp/HDE/x86_64.linux/  /usr/etc/opensplice/ ; fi
+RUN if test ${UBUNTU_DISTRO} != buster; then apt-get update && apt-get install --no-install-recommends -y libopensplice69=6.9.190705+osrf1-1~$UBUNTU_DISTRO; fi
 # Update default domain id.
-RUN sed -i "s/<Id>0<\/Id>/<Id>108<\/Id>/" /usr/etc/opensplice/config/ospl.xml
+RUN if test ${UBUNTU_DISTRO} != buster; sed -i "s/<Id>0<\/Id>/<Id>108<\/Id>/" /usr/etc/opensplice/config/ospl.xml; fi
 
 # Install the Connext binary from the OSRF repositories.
 RUN if test \( ${PLATFORM} = x86 -a ${INSTALL_CONNEXT_DEBS} = true \); then apt-get update && RTI_NC_LICENSE_ACCEPTED=yes apt-get install -y rti-connext-dds-5.3.1; fi
@@ -91,7 +94,7 @@ RUN cd /tmp && tar -xvf /tmp/openssl-1.0.2n-target-x64Linux3gcc5.4.0.tar.gz
 ADD rti_web_binaries_install_script.py /tmp/rti_web_binaries_install_script.py
 
 # Add the RTI license file.
-ADD rticonnextdds-license/rti_license.dat /tmp/rti_license.dat
+# ADD rticonnextdds-license/rti_license.dat /tmp/rti_license.dat
 
 # Add the RTI binaries we made.
 # ADD rticonnextdds-src/librticonnextdds52_5.2.3-1_amd64.deb /tmp/librticonnextdds52_5.2.3-1_amd64.deb
