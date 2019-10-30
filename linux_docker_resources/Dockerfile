@@ -60,6 +60,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   python3-pytest-mock \
   python3-yaml \
   uncrustify
+RUN if test ${UBUNTU_DISTRO} = buster; then apt-get update && apt-get install --no-install-recommends -y xauth; fi
+
 
 # Install and self update pip/setuptools to the latest version.
 RUN apt-get update && apt-get install --no-install-recommends -y python3-pip
@@ -74,7 +76,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y gcovr
 # Install the OpenSplice binary from the OSRF repositories.
 RUN if test ${UBUNTU_DISTRO} = buster; then cd /tmp && curl --silent -OL https://github.com/ADLINK-IST/opensplice/releases/download/OSPL_V6_9_190403OSS_RELEASE/PXXX-VortexOpenSplice-6.9.190403OSS-HDE-x86_64.linux-gcc5.4.0-glibc2.23-installer.tar.gz && tar -xzvf PXXX-VortexOpenSplice-6.9.190403OSS-HDE-x86_64.linux-gcc5.4.0-glibc2.23-installer.tar.gz; fi
 RUN if test ${UBUNTU_DISTRO} = buster; then sed -i "s/<Id>0<\/Id>/<Id>108<\/Id>/" /tmp/HDE/x86_64.linux/etc/config/ospl.xml; fi
-# RUN if test ${UBUNTU_DISTRO} = buster; then ln -s /tmp/HDE/x86_64.linux/  /usr/etc/opensplice/ ; fi
 RUN if test ${UBUNTU_DISTRO} != buster; then apt-get update && apt-get install --no-install-recommends -y libopensplice69=6.9.190705+osrf1-1~$UBUNTU_DISTRO; fi
 # Update default domain id.
 RUN if test ${UBUNTU_DISTRO} != buster; then sed -i "s/<Id>0<\/Id>/<Id>108<\/Id>/" /usr/etc/opensplice/config/ospl.xml; fi
