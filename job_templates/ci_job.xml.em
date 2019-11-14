@@ -199,7 +199,7 @@ echo "# END SECTION"
 @[      if os_name == 'linux-armhf']@
 sed -i "s+^FROM.*$+FROM osrf/ubuntu_armhf:$CI_UBUNTU_DISTRO+" linux_docker_resources/Dockerfile
 @[      else]@
-@[        if ubuntu_distro == 'buster']@
+@[        if "${CI_UBUNTU_DISTRO}" == 'buster']@
 sed -i "s+^FROM.*$+FROM debian:$CI_UBUNTU_DISTRO+" linux_docker_resources/Dockerfile
 @[        else]@
 sed -i "s+^FROM.*$+FROM ubuntu:$CI_UBUNTU_DISTRO+" linux_docker_resources/Dockerfile
