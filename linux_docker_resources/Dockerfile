@@ -14,8 +14,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install --no-install-recommends -y locales
 RUN if test ${UBUNTU_DISTRO} != buster; then locale-gen en_US.UTF-8; \
     else sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
-             dpkg-reconfigure --frontend=noninteractive locales && \
-             update-locale LANG=en_US.UTF-8 ; fi
+    dpkg-reconfigure --frontend=noninteractive locales; fi
 ENV LANG en_US.UTF-8
 
 # net-tools is for ifconfig
